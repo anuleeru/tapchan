@@ -1,0 +1,28 @@
+{% load static %}
+
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" media='all'> -->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<div style="    width: 90%;
+height: 100%;
+justify-content: center;
+align-items: left;
+display: flex;
+flex-direction: column;
+padding: 10px;">
+    <div style="border: 1px solid gray;
+    padding: 10px;
+    border-radius: 6px;">
+ {{order}}
+<hr>
+На имя: {{order.person}}
+<hr>
+На номер: {{order.number}}
+<hr>
+Тапчан: {{order.tapchan}}
+<hr>
+Предзаказ: {{order.food}}
+<hr>
+На дату: {{order.date_rec}}
+<hr>
+</div>
+</div>

@@ -1,0 +1,188 @@
+{% load static %}
+<style>
+	.btn-info {
+		min-width: 110px;
+		max-width: 110px;
+		margin-top: 20px;
+		align-items: center;
+		text-align: center;
+		background-color: #575757;
+		padding: 1rem 2rem;
+		text-decoration: none;
+		color: #ffffff;
+
+		transition: all .2s ease-in-out;
+
+
+	}
+
+	.div_button {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		width: 100%;
+		align-items: center;
+		text-align: center;
+	}
+</style>
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" media='all'>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<a href="/tapchans/" class="btn-info">
+	Вернуться</a>
+
+<section class="ftco-section">
+
+	<div class="container-fluid px-md-5">
+		<form method="post">
+			{% csrf_token %}
+			<h5> Вы выбрали <b style="color:black">{{tapchan.name}}</b></h5>
+			Закажите заранее блюда:
+			<div class="row align-items-center">
+				{% for i in menu %}
+				<div class="col-lg-4 d-flex align-items-stretch search_block" id="{{i.name}} {{i.rating}}">
+					<div id="accordion" class="myaccordion w-100 text-center py-5 px-1 px-md-4" style="display: flex;
+				flex-direction: row;">
+						<div style="width: 30%;">
+
+							<img style="border-radius:5px;  object-fit: cover; width: 100%;" width="auto" height="100%"
+								src="/media/{{i.image}}" alt="">
+						</div>
+
+						<div class="card">
+							<div class="card-header" id="heading{{i.queue_info}}">
+								<h2 class="mb-0">
+									<h5 class="mb-0" data-toggle="collapse" data-target="#collapse{{i.queue_info}}"
+										aria-expanded="true" aria-controls="collapse{{i.queue_info}}">
+										{{i.name}}
+
+									</h5>
+									<div style="display: flex; display: none; ">
+										<h6 id="price{{i.id}}">{{i.price}} </h6>
+										<h6> сомов</h6>
+									</div>
+									<div>
+										<button class="decrement-button" style="border-radius: 50px;
+								background-color: transparent;
+								border: none;
+								padding: 0px 13px 0px 13px; " data-id="{{i.id}}" data-price="{{i.price}}">-</button>
+										<input type="number" name="summ_{{i.name}}" style="  text-align: center;  width: 41px;
+								border-radius: 50px;
+								height: 30px; border: none;" id="quantity{{i.id}}" />
+
+										<button class="increment-button" style="border-radius: 50px;
+								background-color: transparent;
+								border: none;
+								padding: 0px 10px 0px 10px;" data-id="{{i.id}}" data-price="{{i.price}}">+</button>
+									</div>
+
+
+
+								</h2>
+							</div>
+
+						</div>
+
+
+
+					</div>
+				</div>
+
+				{% endfor %}
+
+				<div class="div_button">
+					Заполните данные для оформления заказа:
+					<h6>Ваше имя</h6>
+					<input style="border-radius: 6px;
+			padding: 1px 10px; border: 1px solid;" type="text" required placeholder="Имя" name="name" />
+			<h6>Ваш номер телефона</h6>
+					<input style="border-radius: 6px;
+			padding: 1px 10px; border: 1px solid;" type="text" required placeholder="Номер телефона" name="number_phone" />
+			<h6>Выберите дату и время</h6>
+			<input type="text" id="date_rec" name="date_rec" required placeholder="Выберите дату и время"><br>
+					<button style="border-radius: 6px;
+			padding: 1px 10px;
+			border: 1px solid;" type="submit">Оформить заказ</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+	flatpickr('#date_rec', {
+          enableTime: true,
+          dateFormat: "Y-m-d H:i",
+        });
+	</script>
+<script>
+	const incrementButtons = document.querySelectorAll('.increment-button');
+	const decrementButtons = document.querySelectorAll('.decrement-button');
+
+	incrementButtons.forEach(button => {
+		button.addEventListener('click', function () {
+			event.preventDefault();
+			increment(button.getAttribute('data-id'), button.getAttribute('data-price'));
+		});
+	});
+
+	decrementButtons.forEach(button => {
+		button.addEventListener('click', function () {
+			event.preventDefault();
+			decrement(button.getAttribute('data-id'), button.getAttribute('data-price'));
+		});
+	});
+
+	function increment(id, price) {
+		var quantityInput = document.getElementById('quantity' + id);
+
+		if (quantityInput.value == "") {
+			quantityInput.value = 0
+
+		}
+		quantityInput.value = parseInt(quantityInput.value) + 1;
+		updateTotal(id, price)
+	}
+
+	function decrement(id, price) {
+		var quantityInput = document.getElementById('quantity' + id);
+		if (parseInt(quantityInput.value) > 0) {
+			quantityInput.value = parseInt(quantityInput.value) - 1;
+			updateTotal(id, price)
+		}
+	}
+
+	function updateTotal(id, price) {
+		var quantity = parseInt(document.getElementById('quantity' + id).value);
+		var totalPrice = quantity * parseFloat(price);
+		document.getElementById('price' + id).textContent = totalPrice.toFixed(2);
+	}
+</script>
+<!-- 
+<script type="text/javascript">
+	function filterBlocks() {
+		const searchInput = document.getElementById("searchInput").value;
+		const setqrBlocks = document.querySelectorAll(".search_block");
+
+		setqrBlocks.forEach((block) => {
+        const blockId = block.id.toLowerCase(); // Преобразование в нижний регистр
+        if (blockId.includes(searchInput)) {
+            block.style.display = "table-row"; // Показать блок с совпадающим идентификатором
+        } else {
+            block.style.display = "none"; // Скрыть остальные блоки
+        }
+    });
+	}
+	document.getElementById("searchInput").addEventListener("input", filterBlocks);
+
+	// Функция для отображения всех блоков
+	function showAllBlocks() {
+		const setqrBlocks = document.querySelectorAll(".search_block");
+
+		setqrBlocks.forEach((block) => {
+			block.style.display = "table-row"; // Показать все блоки
+		});
+		document.getElementById("searchInput").value = "";
+		document.getElementById("searchInput").setAttribute("placeholder", "102..");
+	}
+</script> -->
